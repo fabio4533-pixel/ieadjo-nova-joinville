@@ -1,0 +1,14 @@
+{
+  "name": "IEADJO Nova Joinville",
+  "short_name": "IEADJO",
+  "description": "Aplicativo da IEADJO Nova Joinville",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f5f7fa",
+  "theme_color": "#0e2a47",
+  "icons": [
+    {"src":"/igreja-hq.jpg","sizes":"192x192","type":"image/jpeg","purpose":"any"},
+    {"src":"/igreja-hq.jpg","sizes":"512x512","type":"image/jpeg","purpose":"any maskable"}
+  ]
+}
