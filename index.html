@@ -7,71 +7,57 @@
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="IEADJO">
+<meta name="apple-mobile-web-app-title" content="IEADJO Nova Joinville">
 <link rel="apple-touch-icon" href="/igreja-hq.jpg">
+<link rel="icon" href="/igreja-hq.jpg">
 <title>IEADJO Nova Joinville</title>
 <style>
 html,body{margin:0;height:100%;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:#0e2a47}*{box-sizing:border-box}
-.installbar{min-height:72px;background:#0e2a47;color:#fff;padding:10px 12px;display:flex;gap:8px;align-items:center;justify-content:center;position:sticky;top:0;z-index:1000;box-shadow:0 2px 10px #0003}
-.installbar strong{font-size:13px;margin-right:4px}.installbar button{border:0;border-radius:12px;padding:11px 13px;font-weight:800;cursor:pointer}.android{background:#59c78b;color:#073c24}.ios{background:#fff;color:#0e2a47}.hidden{display:none!important}
-#site{width:100%;height:calc(100vh - 72px);border:0;display:block;background:#fff}
-.modal{position:fixed;inset:0;background:#0009;display:grid;place-items:center;z-index:2000;padding:22px}.box{max-width:360px;background:#fff;border-radius:18px;padding:20px;color:#152433}.box h3{margin:0 0 8px}.box p{line-height:1.45;font-size:14px}.box button{width:100%;padding:12px;border:0;border-radius:10px;background:#0e2a47;color:#fff;font-weight:800}
-@media(max-width:520px){.installbar{flex-wrap:wrap}.installbar strong{width:100%;text-align:center}.installbar button{flex:1}#site{height:calc(100vh - 92px)}}
+#site{width:100%;height:100vh;border:0;display:block;background:#fff}
+.installfloat{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:3000;width:min(430px,calc(100% - 24px));background:#fff;color:#152433;border-radius:22px;padding:12px;box-shadow:0 14px 45px #0005;border:1px solid #dfe6ec;display:flex;gap:11px;align-items:center}
+.appthumb{width:54px;height:54px;border-radius:15px;object-fit:cover;flex:none;border:2px solid #fff;box-shadow:0 2px 10px #0002}.installcopy{min-width:0;flex:1}.installcopy strong{display:block;font-size:14px;line-height:1.15}.installcopy small{display:block;color:#687887;font-size:11px;margin-top:3px}.installbuttons{display:flex;gap:6px;margin-top:8px}.installbuttons button{border:0;border-radius:10px;padding:9px 10px;font-weight:800;font-size:11px;cursor:pointer}.android{background:#59c78b;color:#073c24}.ios{background:#0e2a47;color:#fff}.hidden{display:none!important}
+.modal{position:fixed;inset:0;background:#0009;display:grid;place-items:center;z-index:4000;padding:22px}.box{max-width:360px;background:#fff;border-radius:18px;padding:20px;color:#152433}.box img{width:64px;height:64px;object-fit:cover;border-radius:16px;display:block;margin-bottom:12px}.box h3{margin:0 0 8px}.box p{line-height:1.45;font-size:14px}.box button{width:100%;padding:12px;border:0;border-radius:10px;background:#0e2a47;color:#fff;font-weight:800}
+@media(max-width:430px){.installfloat{align-items:flex-start}.appthumb{width:50px;height:50px}.installbuttons{flex-wrap:wrap}.installbuttons button{flex:1;min-width:110px}}
 </style>
 </head>
 <body>
-<div id="installbar" class="installbar">
-  <strong>Instale o aplicativo IEADJO</strong>
-  <button id="installAndroid" class="android">🤖 Instalar no Android</button>
-  <button id="installIOS" class="ios"> Instalar no iPhone</button>
-</div>
 <iframe id="site" src="/index-1.html" title="IEADJO Nova Joinville"></iframe>
-<div id="iosModal" class="modal hidden"><div class="box"><h3>Instalar no iPhone</h3><p>No iPhone, a Apple exige uma confirmação pelo Safari. Toque em <b>Compartilhar</b> e depois em <b>Adicionar à Tela de Início</b>.</p><button id="closeModal">Entendi</button></div></div>
+<div id="installfloat" class="installfloat">
+  <img class="appthumb" src="/igreja-hq.jpg" alt="Igreja IEADJO Nova Joinville">
+  <div class="installcopy">
+    <strong>IEADJO Nova Joinville</strong>
+    <small>Instale o aplicativo no seu celular</small>
+    <div class="installbuttons">
+      <button id="installAndroid" class="android">🤖 Android</button>
+      <button id="installIOS" class="ios"> iPhone</button>
+    </div>
+  </div>
+</div>
+<div id="iosModal" class="modal hidden"><div class="box"><img src="/igreja-hq.jpg" alt="IEADJO"><h3>Instalar IEADJO</h3><p>No iPhone, toque em <b>Compartilhar</b> no Safari e depois em <b>Adicionar à Tela de Início</b>. O aplicativo aparecerá com a foto da igreja e o nome IEADJO Nova Joinville.</p><button id="closeModal">Entendi</button></div></div>
 <script>
 let deferredPrompt=null;
-const bar=document.getElementById('installbar');
+const floatBox=document.getElementById('installfloat');
 const androidBtn=document.getElementById('installAndroid');
 const iosBtn=document.getElementById('installIOS');
 const modal=document.getElementById('iosModal');
-
-window.addEventListener('beforeinstallprompt',e=>{
-  e.preventDefault();
-  deferredPrompt=e;
-  androidBtn.textContent='🤖 Instalar agora';
-});
-
+function hideInstall(){floatBox.classList.add('hidden');localStorage.setItem('installChoiceClicked','1');}
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;androidBtn.textContent='🤖 Instalar';});
 androidBtn.addEventListener('click',async()=>{
-  if(deferredPrompt){
-    deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
-    deferredPrompt=null;
-    return;
-  }
-  if(window.matchMedia('(display-mode: standalone)').matches){
-    alert('O aplicativo já está instalado neste aparelho.');
-    return;
-  }
-  alert('Abra este site no Google Chrome do Android. Quando o navegador liberar a instalação, toque novamente em “Instalar”.');
+  if(window.matchMedia('(display-mode: standalone)').matches){hideInstall();return;}
+  if(deferredPrompt){deferredPrompt.prompt();const choice=await deferredPrompt.userChoice;if(choice.outcome==='accepted')hideInstall();deferredPrompt=null;return;}
+  alert('Abra este site no Google Chrome do Android e toque novamente em “Android” quando a instalação estiver disponível.');
 });
-
 iosBtn.addEventListener('click',async()=>{
+  if(navigator.standalone){hideInstall();return;}
   const ua=navigator.userAgent.toLowerCase();
   const isIOS=/iphone|ipad|ipod/.test(ua);
-  if(!isIOS){ modal.classList.remove('hidden'); return; }
-  if(navigator.standalone){ alert('O aplicativo já está instalado neste iPhone.'); return; }
-  if(navigator.share){
-    try{
-      await navigator.share({title:'IEADJO Nova Joinville',text:'Instalar aplicativo IEADJO',url:location.origin});
-      return;
-    }catch(e){}
-  }
+  if(isIOS && navigator.share){try{await navigator.share({title:'IEADJO Nova Joinville',text:'Instalar aplicativo IEADJO',url:location.origin});hideInstall();return;}catch(e){}}
   modal.classList.remove('hidden');
 });
-
-document.getElementById('closeModal').onclick=()=>modal.classList.add('hidden');
-window.addEventListener('appinstalled',()=>{bar.classList.add('hidden');document.getElementById('site').style.height='100vh';});
-if(window.matchMedia('(display-mode: standalone)').matches || navigator.standalone){bar.classList.add('hidden');document.getElementById('site').style.height='100vh';}
-
+document.getElementById('closeModal').onclick=()=>{modal.classList.add('hidden');hideInstall();};
+window.addEventListener('appinstalled',hideInstall);
+if(window.matchMedia('(display-mode: standalone)').matches || navigator.standalone){hideInstall();}
+if(localStorage.getItem('installChoiceClicked')==='1' && !(window.matchMedia('(display-mode: browser)').matches)){floatBox.classList.add('hidden');}
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));}
 </script>
 </body>
