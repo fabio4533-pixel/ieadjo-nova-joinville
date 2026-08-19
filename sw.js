@@ -1,5 +1,5 @@
-const CACHE='ieadjo-v13';
-const ASSETS=['/','/index-1.html?v=13','/manifest.webmanifest','/igreja-hq.jpg'];
+const CACHE='ieadjo-v14';
+const ASSETS=['/','/index-1.html?v=14','/manifest.webmanifest','/igreja-hq.jpg','/dynamic-repertorio.js'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).catch(()=>{}));self.skipWaiting();});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
-self.addEventListener('fetch',event=>{if(event.request.method!=='GET')return;event.respondWith(fetch(event.request).then(response=>{const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(event.request,copy)).catch(()=>{});return response;}).catch(()=>caches.match(event.request).then(r=>r||caches.match('/'))));});
+self.addEventListener('fetch',event=>{if(event.request.method!=='GET')return;const u=new URL(event.request.url);if(u.origin===location.origin&&u.pathname==='/index-1.html'){event.respondWith(fetch(event.request).then(async response=>{let html=await response.text();if(!html.includes('dynamic-repertorio.js'))html=html.replace('</body>','<script src="/dynamic-repertorio.js?v=1"></script></body>');return new Response(html,{status:response.status,statusText:response.statusText,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-cache'}})}).catch(()=>caches.match(event.request)));return;}event.respondWith(fetch(event.request).then(response=>{const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(event.request,copy)).catch(()=>{});return response;}).catch(()=>caches.match(event.request).then(r=>r||caches.match('/'))));});
