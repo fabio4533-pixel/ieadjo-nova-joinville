@@ -21,7 +21,7 @@ html,body{margin:0;height:100%;font-family:system-ui,-apple-system,"Segoe UI",sa
 </style>
 </head>
 <body>
-<iframe id="site" src="/index-1.html" title="IEADJO Nova Joinville"></iframe>
+<iframe id="site" src="/index-1.html?v=6" title="IEADJO Nova Joinville"></iframe>
 <div id="installfloat" class="installfloat">
   <img class="appthumb" src="/igreja-hq.jpg" alt="Igreja IEADJO Nova Joinville">
   <div class="installcopy">
@@ -58,6 +58,54 @@ document.getElementById('closeModal').onclick=()=>{modal.classList.add('hidden')
 window.addEventListener('appinstalled',hideInstall);
 if(window.matchMedia('(display-mode: standalone)').matches || navigator.standalone){hideInstall();}
 if(localStorage.getItem('installChoiceClicked')==='1' && !(window.matchMedia('(display-mode: browser)').matches)){floatBox.classList.add('hidden');}
+
+const SB_URL='https://fzpffyouubmbxfwycywg.supabase.co';
+const SB_KEY='sb_publishable_fqG3I5cRWBXjn-EP0FoATA_0-SWvfsR';
+let adminSchedules=[];
+function safe(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));}
+function localDate(iso){const [y,m,d]=String(iso).split('-').map(Number);return new Date(y,m-1,d,12,0,0);}
+function fmtShort(iso){const d=localDate(iso);const wk=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];const mo=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];return `${wk[d.getDay()]} • ${d.getDate()} ${mo[d.getMonth()]}`;}
+function fmtMonth(iso){const d=localDate(iso);return d.toLocaleDateString('pt-BR',{month:'short'}).replace('.','').toUpperCase();}
+async function fetchSchedules(){
+  try{
+    const today=new Date();const y=today.getFullYear(),m=String(today.getMonth()+1).padStart(2,'0'),d=String(today.getDate()).padStart(2,'0');
+    const r=await fetch(`${SB_URL}/rest/v1/ieadjo_schedules?select=id,event_date,title,time_text,role_text&event_date=gte.${y}-${m}-${d}&order=event_date.asc,id.asc`,{headers:{apikey:SB_KEY}});
+    if(!r.ok)throw new Error('Falha ao carregar escalas');
+    adminSchedules=await r.json();
+    patchIframe();
+  }catch(e){console.warn('Escalas:',e);}
+}
+function patchIframe(){
+  const fr=document.getElementById('site');let doc;try{doc=fr.contentDocument||fr.contentWindow.document}catch{return}if(!doc||!adminSchedules.length)return;
+  const view=doc.getElementById('view');if(!view)return;
+  const next=adminSchedules[0];
+  const hero=view.querySelector('.hero');
+  if(hero){
+    const date=hero.querySelector('.herohead span:last-child');if(date)date.textContent=fmtShort(next.event_date);
+    const h2=hero.querySelector('h2');if(h2)h2.textContent=next.title||'Próxima escala';
+    const muted=hero.querySelector('.muted');if(muted)muted.textContent=`${next.time_text||'Horário a definir'} • Templo IEADJO Nova Joinville`;
+    const role=hero.querySelector('.role b');if(role)role.textContent=next.role_text||'Equipe';
+  }
+  const quick=[...view.querySelectorAll('.grid button')].find(b=>b.textContent.includes('Escalas'));
+  if(quick){const sm=quick.querySelector('small');if(sm)sm.textContent=`${adminSchedules.length} próxima${adminSchedules.length===1?'':'s'}`;}
+  const ph=view.querySelector('.pagehead h1');
+  if(ph && ph.textContent.trim()==='Minhas escalas'){
+    const pagehead=view.querySelector('.pagehead');
+    const cards=adminSchedules.map((s,i)=>{const dt=localDate(s.event_date);return `<div class="card"><div class="date">${String(dt.getDate()).padStart(2,'0')}<small>${fmtMonth(s.event_date)}</small></div><div class="grow"><b>${safe(s.title)}</b><span>${safe((s.time_text||'Horário a definir')+' • '+(s.role_text||'Equipe'))}</span></div><span class="status ${i===0?'ok':''}">${i===0?'Próxima':'Programada'}</span></div>`}).join('');
+    const existing=[...view.querySelectorAll('.card')];existing.forEach(x=>x.remove());
+    pagehead.insertAdjacentHTML('afterend',cards||'<div class="card">Nenhuma escala cadastrada.</div>');
+  }
+}
+const iframe=document.getElementById('site');
+iframe.addEventListener('load',()=>{
+  fetchSchedules();
+  try{
+    const doc=iframe.contentDocument;
+    const view=doc.getElementById('view');
+    if(view){let timer=null;new MutationObserver(()=>{clearTimeout(timer);timer=setTimeout(patchIframe,40)}).observe(view,{childList:true,subtree:true});}
+  }catch(e){}
+});
+setInterval(fetchSchedules,60000);
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));}
 </script>
 </body>
