@@ -10,10 +10,10 @@ function ensureSearch(){
   if(!cultos)return;
   let wrap=view.querySelector('[data-rep-search]');
   if(!wrap){
-    wrap=document.createElement('div');
+    wrap=document.createElement('section');
     wrap.setAttribute('data-rep-search','1');
-    wrap.style.cssText='display:block!important;margin:10px 0 14px;position:relative;visibility:visible!important;opacity:1!important';
-    wrap.innerHTML='<span style="position:absolute;left:12px;top:21px;transform:translateY(-50%);font-size:16px;pointer-events:none">🔎</span><input type="search" placeholder="Pesquisar música, cantor/ministério ou tom..." autocomplete="off" style="width:100%;border:1px solid #d9e2ea;border-radius:13px;padding:12px 14px 12px 38px;background:#fff;color:#152433;font:inherit;outline:none"><div data-rep-search-count style="font-size:11px;color:#6c7a89;margin:6px 2px 0"></div>';
+    wrap.style.cssText='display:block!important;margin:0 0 14px;padding:13px 14px;border:1px solid #dbe4ec;border-radius:17px;background:#fff;box-shadow:0 7px 20px #0e2a470d;visibility:visible!important;opacity:1!important';
+    wrap.innerHTML='<div style="font-size:11px;font-weight:900;letter-spacing:.7px;color:#6b7885;margin:0 0 8px">PESQUISAR MÚSICAS</div><div style="position:relative"><span style="position:absolute;left:12px;top:21px;transform:translateY(-50%);font-size:16px;pointer-events:none">🔎</span><input type="search" placeholder="Digite o nome da música, cantor/ministério ou tom..." autocomplete="off" style="width:100%;border:1px solid #cfdbe5;border-radius:13px;padding:12px 14px 12px 38px;background:#fdfefe;color:#152433;font:inherit;outline:none"></div><div data-rep-search-count style="font-size:11px;color:#6c7a89;margin:6px 2px 0"></div>';
     const input=wrap.querySelector('input'),count=wrap.querySelector('[data-rep-search-count]');
     const apply=()=>{const q=norm(input.value);const rows=[...view.querySelectorAll('.dynamic-song,.song,.member-culto-song')];let visible=0;rows.forEach(row=>{const hit=!q||norm(row.textContent).includes(q);row.style.display=hit?'':'none';if(hit)visible++});count.textContent=q?`${visible} resultado${visible===1?'':'s'} encontrado${visible===1?'':'s'}`:''};
     input.addEventListener('input',apply);input.addEventListener('search',apply);wrap._apply=apply;
