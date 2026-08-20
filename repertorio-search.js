@@ -14,7 +14,9 @@ function makeSearch(container,mode){
   }
   if(mode==='app'){
     const head=container.querySelector('.pagehead');
-    if(head&&wrap.previousElementSibling!==head)head.insertAdjacentElement('afterend',wrap);
+    const cultos=container.querySelector('#leaderCultosFirst')||container.querySelector('#memberCultoMenu');
+    const anchor=cultos||head;
+    if(anchor&&wrap.previousElementSibling!==anchor)anchor.insertAdjacentElement('afterend',wrap);
   }else{
     const h=container.querySelector('h3');
     if(h&&wrap.previousElementSibling!==h)h.insertAdjacentElement('afterend',wrap);
