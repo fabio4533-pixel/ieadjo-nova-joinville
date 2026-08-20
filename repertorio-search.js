@@ -13,10 +13,15 @@ function makeSearch(container,mode){
     input.addEventListener('input',apply);input.addEventListener('search',apply);wrap._apply=apply;
   }
   if(mode==='app'){
-    const head=container.querySelector('.pagehead');
-    const cultos=container.querySelector('#leaderCultosFirst')||container.querySelector('#memberCultoMenu');
-    const anchor=cultos||head;
-    if(anchor&&wrap.previousElementSibling!==anchor)anchor.insertAdjacentElement('afterend',wrap);
+    const leaderCultos=container.querySelector('#leaderCultosFirst');
+    const memberCultos=container.querySelector('#memberCultoMenu');
+    const cultos=leaderCultos||memberCultos;
+    if(cultos){
+      if(wrap.previousElementSibling!==cultos)cultos.insertAdjacentElement('afterend',wrap);
+      wrap.style.display='block';
+    }else{
+      wrap.style.display='none';
+    }
   }else{
     const h=container.querySelector('h3');
     if(h&&wrap.previousElementSibling!==h)h.insertAdjacentElement('afterend',wrap);
